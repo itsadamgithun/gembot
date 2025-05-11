@@ -1,3 +1,4 @@
+/* Alap stílusok */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
@@ -12,7 +13,7 @@ body {
 .chat-container {
   background-color: white;
   width: 350px;
-  border-radius: 8px;
+  border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -24,6 +25,7 @@ body {
   color: white;
   padding: 10px;
   text-align: center;
+  font-size: 18px;
 }
 
 #language-selector {
@@ -35,18 +37,23 @@ body {
   padding: 10px;
   overflow-y: auto;
   max-height: 400px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .messages {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .message {
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 25px; /* Ovális üzenetbuborék */
   max-width: 80%;
+  width: fit-content;
+  font-size: 16px;
+  word-wrap: break-word;
 }
 
 .user-message {
@@ -65,14 +72,17 @@ body {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
 }
 
 textarea {
   resize: none;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 15px;
   border: 1px solid #ccc;
   margin-bottom: 10px;
+  font-size: 14px;
 }
 
 button {
@@ -80,7 +90,7 @@ button {
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 15px;
   cursor: pointer;
 }
 
