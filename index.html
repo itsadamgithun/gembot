@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot - Válassz nyelvet</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="chat-container">
+
+<div class="chat-container">
     <div class="header">
-      <h1>Üdvözöllek a Chatbotban!</h1>
-      <label for="language-selector">Válassz nyelvet:</label>
-      <select id="language-selector">
-        <option value="hu">Magyar</option>
-        <option value="en">Angol</option>
-      </select>
+        <h1>Üdvözöllek a Chatbotban!</h1>
+        <label for="language-selector">Válassz nyelvet:</label>
+        <select id="language-selector">
+            <option value="hu">Magyar</option>
+            <option value="en">Angol</option>
+        </select>
     </div>
 
     <div class="chat-box">
-      <div id="messages" class="messages">
-        <!-- Üzenetek itt jelennek meg -->
-      </div>
+        <div id="messages" class="messages">
+            <!-- Üzenetek itt jelennek meg -->
+        </div>
     </div>
 
     <div class="input-box">
-      <textarea id="userMessage" placeholder="Írj egy üzenetet..." rows="3"></textarea>
-      <button id="sendMessage">Küldés</button>
+        <textarea id="userMessage" placeholder="Írj egy üzenetet..." rows="3"></textarea>
+        <button id="sendMessage">Küldés</button>
     </div>
-  </div>
+</div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
