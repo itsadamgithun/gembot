@@ -1,39 +1,45 @@
-const messagesContainer = document.getElementById("messages");
-const userInput = document.getElementById("userInput");
+document.getElementById('sendMessage').addEventListener('click', async function() {
+  const message = document.getElementById('userMessage').value;
+  const language = document.getElementById('language-selector').value; // Nyelv beállítása
+  const messagesContainer = document.getElementById('messages');
 
-userInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") sendMessage();
-});
+  if (message.trim() === '') {
+    return;
+  }
 
-function addMessage(text, sender) {
-  const msg = document.createElement("div");
-  msg.className = `message ${sender}`;
-  msg.textContent = text;
-  messagesContainer.appendChild(msg);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
+  // Felhasználó üzenete
+  addMessage('user', message);
 
-async function sendMessage() {
-  const message = userInput.value.trim();
-  if (!message) return;
-
-  addMessage(message, "user");
-  userInput.value = "";
-  addMessage("Gondolkodom...", "bot");
-
+  // Üzenet küldése a backendnek
   try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message, language }), // Nyelv is bekerül a kérésbe
     });
 
     const data = await response.json();
-    document.querySelector(".message.bot:last-child").remove();
-    addMessage(data.reply || "Nem érkezett válasz.", "bot");
-  } catch (err) {
-    console.error(err);
-    document.querySelector(".message.bot:last-child").remove();
-    addMessage("Hiba történt a kapcsolat során.", "bot");
+
+    if (data.reply) {
+      addMessage('bot', data.reply);
+    } else {
+      addMessage('bot', 'Hiba történt.');
+    }
+  } catch (error) {
+    console.error('Hiba történt a kérés során:', error);
+    addMessage('bot', 'Nem sikerült üzenetet küldeni.');
   }
+
+  document.getElementById('userMessage').value = ''; // Üzenet mező törlése
+});
+
+function addMessage(role, message) {
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('message');
+  messageElement.classList.add(role === 'user' ? 'user-message' : 'bot-message');
+  messageElement.textContent = message;
+  document.getElementById('messages').appendChild(messageElement);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight; // Görgetés az utolsó üzenetre
 }
