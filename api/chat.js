@@ -1,35 +1,52 @@
-// api/chat.js
+// File: /api/chat.js (Vercel serverless function)
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Csak POST kérés engedélyezett' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // Üzenet, amit a frontend küld
-  const { message } = req.body;
+  const { message, lang } = req.body;
+
+  if (!message) {
+    return res.status(400).json({ error: "Message is required" });
+  }
+
+  const apiKey = process.env.TOGETHER_API_KEY; // 🔐 Add this in Vercel environment variables
+  const endpoint = "https://api.together.xyz/v1/chat/completions";
 
   try {
-    const response = await fetch("https://api.together.xyz/v1/chat/completions", {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.TOGETHER_API_KEY}`, // ← API kulcs környezeti változó
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "meta-llama/Llama-3-8b-chat-hf",  // Ha a model más, változtasd meg
-        messages: [{ role: "user", content: message }]  // Felhasználó üzenete
-      })
+        model: "togethercomputer/llama-3-8b-chat", // vagy más elérhető Together.ai modell
+        messages: [
+          {
+            role: "system",
+            content: `Válaszolj ${lang} nyelven, légy barátságos.`,
+          },
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+      }),
     });
 
-    const data = await response.json();
-
-    if (data.choices && data.choices.length > 0) {
-      return res.status(200).json({ reply: data.choices[0].message.content });
-    } else {
-      return res.status(500).json({ reply: "Nem érkezett válasz a modellből." });
+    if (!response.ok) {
+      const errorData = await response.json();
+      return res.status(response.status).json({ error: errorData });
     }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ reply: "Hiba történt a kapcsolat során." });
+
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content?.trim();
+
+    res.status(200).json({ reply });
+  } catch (error) {
+    console.error("Together.ai error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }

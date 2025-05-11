@@ -1,45 +1,55 @@
-document.getElementById('sendMessage').addEventListener('click', async function() {
-  const message = document.getElementById('userMessage').value;
-  const language = document.getElementById('language-selector').value; // Nyelv beállítása
-  const messagesContainer = document.getElementById('messages');
+const chatContainer = document.getElementById("chat-container");
+const inputForm = document.getElementById("input-form");
+const inputField = document.getElementById("input");
+const langSelect = document.getElementById("language-select");
 
-  if (message.trim() === '') {
-    return;
-  }
+inputForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = inputField.value.trim();
+  if (message === "") return;
 
-  // Felhasználó üzenete
-  addMessage('user', message);
+  addMessage("user", message);
+  inputField.value = "";
+  inputField.disabled = true;
 
-  // Üzenet küldése a backendnek
+  addMessage("bot", "Gondolkodom...");
+
   try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message, language }), // Nyelv is bekerül a kérésbe
-    });
+    // 🔐 API-kulcs NEM kerül be hardcode-olva, csak szerveren keresztül használjuk majd.
+    const lang = langSelect.value;
 
-    const data = await response.json();
+    // Itt kellene a backend proxy végpont meghívása, pl:
+    // const res = await fetch("/api/chat", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ message, lang }),
+    // });
 
-    if (data.reply) {
-      addMessage('bot', data.reply);
-    } else {
-      addMessage('bot', 'Hiba történt.');
-    }
-  } catch (error) {
-    console.error('Hiba történt a kérés során:', error);
-    addMessage('bot', 'Nem sikerült üzenetet küldeni.');
+    // Temporális dummy válasz (helyettesítsd a fentivel, ha lesz szervered)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const dummyResponse = `Ez egy példaválasz a(z) ${lang} nyelven.`;
+
+    replaceLastBotMessage(dummyResponse);
+
+  } catch (err) {
+    replaceLastBotMessage("⚠️ Hiba történt a válasz lekérése közben.");
+    console.error(err);
+  } finally {
+    inputField.disabled = false;
+    inputField.focus();
   }
-
-  document.getElementById('userMessage').value = ''; // Üzenet mező törlése
 });
 
-function addMessage(role, message) {
-  const messageElement = document.createElement('div');
-  messageElement.classList.add('message');
-  messageElement.classList.add(role === 'user' ? 'user-message' : 'bot-message');
-  messageElement.textContent = message;
-  document.getElementById('messages').appendChild(messageElement);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight; // Görgetés az utolsó üzenetre
+function addMessage(sender, text) {
+  const messageDiv = document.createElement("div");
+  messageDiv.className = `message ${sender}`;
+  messageDiv.textContent = text;
+  chatContainer.appendChild(messageDiv);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function replaceLastBotMessage(newText) {
+  const botMessages = [...document.querySelectorAll(".message.bot")];
+  const lastBot = botMessages[botMessages.length - 1];
+  if (lastBot) lastBot.textContent = newText;
 }
